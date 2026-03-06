@@ -556,3 +556,65 @@
           statSignals.textContent = signalCount.toString();
           statSessions.textContent = sessionCount.toString();
           statEpoch.textContent = epoch.toString();
+
+          let bandRows = [];
+          const bc = Number(bandCount);
+          for (let i = 1; i <= Math.min(bc, 24); i++) {
+            try {
+              const b = await contract.getBand(i);
+              const tag = hexToTag(b.bandTag);
+              bandRows.push(i + ' | ' + tag + ' | ' + b.lowerBps + ' | ' + b.upperBps + ' | ' + b.policyEpoch + ' | ' + b.active);
+            } catch (err) { bandRows.push(i + ' | (error)'); }
+          }
+          bandsBody.textContent = bandRows.length ? bandRows.join('\n') : '—';
+
+          let signalRows = [];
+          const sc = Number(signalCount);
+          const fromSig = Math.max(1, sc - 9);
+          for (let i = sc; i >= fromSig && i >= 1; i--) {
+            try {
+              const s = await contract.getSignal(i);
+              signalRows.push(i + ' | ' + (s.signalHash.slice(0, 18) + '…') + ' | ' + s.epoch + ' | ' + s.atBlock);
+            } catch (err) { signalRows.push(i + ' | (error)'); }
+          }
+          signalsBody.textContent = signalRows.length ? signalRows.join('\n') : '—';
+
+          let sessionRows = [];
+          const ssc = Number(sessionCount);
+          for (let i = 1; i <= Math.min(ssc, 20); i++) {
+            try {
+              const s = await contract.getSession(i);
+              sessionRows.push(i + ' | ' + shortAddr(s.analyst) + ' | ' + s.openedAtBlock + ' | ' + s.expiryBlock + ' | ' + s.closed);
+            } catch (err) { sessionRows.push(i + ' | (error)'); }
+          }
+          sessionsBody.textContent = sessionRows.length ? sessionRows.join('\n') : '—';
+
+          let feedHtml = '';
+          for (let i = 0; i < 16; i++) {
+            try {
+              const f = await contract.getFeed(i);
+              if (f.updatedAtBlock && f.updatedAtBlock !== 0n) {
+                feedHtml += '<div class="feed-row"><span class="feed-idx">Feed ' + i + '</span><span class="feed-val">' + f.value + '</span><span class="feed-stale">block ' + f.updatedAtBlock + '</span></div>';
+              }
+            } catch (e) {}
+          }
+          feedsList.innerHTML = feedHtml || '<div class="mono">No feed data</div>';
+
+          try {
+            const cfg = await contract.getConfigSnapshot();
+            document.getElementById("configSnapshot").textContent =
+              'band_cap=' + cfg.bandCap + ' band_count=' + cfg.bandCount + ' current_epoch=' + cfg.currentEpoch_ +
+              ' stale_window=' + cfg.staleWindowBlocks_ + ' fee_bps=' + cfg.feeBps_ + ' paused=' + cfg.paused_;
+          } catch (err) {
+            document.getElementById("configSnapshot").textContent = '—';
+          }
+
+          try {
+            const hCount = await contract.getBandHistoryCount();
+            var historyRows = [];
+            var fromH = hCount > 20 ? Number(hCount) - 19 : 1;
+            var toH = Number(hCount);
+            if (hCount > 0n) {
+              var r = await contract.getBandHistoryRange(fromH, toH);
+              for (var i = 0; i < r.bandIds.length; i++) {
+                historyRows.push((fromH + i) + ' | ' + r.bandIds[i] + ' | ' + r.lowerBps[i] + ' | ' + r.upperBps[i] + ' | ' + r.active[i] + ' | ' + r.atBlocks[i]);
