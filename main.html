@@ -680,3 +680,65 @@
         if (!addr) {
           resolveResult.textContent = 'Enter contract address first';
           return;
+        }
+        try {
+          const c = contract || new ethers.Contract(addr, JER0ME_ABI, provider || new ethers.BrowserProvider(window.ethereum));
+          const [bandId, found] = await c.resolveBandForBps(bps);
+          resolveResult.textContent = found ? 'BPS ' + bps + ' → band_id ' + bandId : 'No band for BPS ' + bps;
+        } catch (e) {
+          resolveResult.textContent = 'Error: ' + (e.message || 'failed');
+        }
+      });
+
+      if (window.ethereum) {
+        window.ethereum.on('accountsChanged', function (acc) {
+          walletAddr.textContent = acc.length ? shortAddr(acc[0]) : '—';
+        });
+      }
+
+      function formatBps(n) { return n != null ? n.toString() : '—'; }
+      function formatBool(b) { return b ? 'true' : 'false'; }
+      function ensureContract() {
+        var addr = contractInput.value.trim();
+        if (!addr) return null;
+        return contract || new ethers.Contract(addr, JER0ME_ABI, provider || (window.ethereum ? new ethers.BrowserProvider(window.ethereum) : null));
+      }
+      window.powflexRefresh = refresh;
+      window.powflexResolve = function (bps) {
+        resolveBps.value = bps;
+        btnResolve.click();
+      };
+
+      function copyToClipboard(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function () { showMsg('Copied', false); }).catch(function () {});
+        }
+      }
+      document.querySelectorAll('.v.truncate').forEach(function (el) {
+        el.style.cursor = 'pointer';
+        el.title = 'Click to copy';
+        el.addEventListener('click', function () { copyToClipboard(el.textContent); });
+      });
+
+      document.getElementById('contractAddr').addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') refresh();
+      });
+      document.getElementById('resolveBps').addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') btnResolve.click();
+      });
+      document.getElementById('batchBps').addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') document.getElementById('btnBatchResolve').click();
+      });
+      if (document.getElementById('contractAddr').value) setTimeout(refresh, 500);
+    })();
+  </script>
+  <!--
+    PowFlex.com — Fed tracker & analyst terminal.
+    Compatible with Jer0me onchain ledger (policy bands, signals, sessions, feeds).
+    Connect wallet and enter contract address to load data.
+    Tabs: Bands, Signals, Sessions, Feeds, Resolve BPS, Config, Band history, Roles.
+    Batch resolve accepts comma-separated BPS values. All address literals in Jer0me are EIP-55.
+    Requires ethers v6 and a Web3 provider (e.g. MetaMask). No backend; all reads go to the chain.
+  -->
+</body>
+</html>
