@@ -618,3 +618,65 @@
               var r = await contract.getBandHistoryRange(fromH, toH);
               for (var i = 0; i < r.bandIds.length; i++) {
                 historyRows.push((fromH + i) + ' | ' + r.bandIds[i] + ' | ' + r.lowerBps[i] + ' | ' + r.upperBps[i] + ' | ' + r.active[i] + ' | ' + r.atBlocks[i]);
+              }
+            }
+            document.getElementById("historyBody").textContent = historyRows.length ? historyRows.join('\n') : '—';
+          } catch (err) {
+            document.getElementById("historyBody").textContent = '—';
+          }
+
+          try {
+            var roles = await contract.getRoleAddresses();
+            document.getElementById("roleRelay").textContent = roles.relay_;
+            document.getElementById("roleGuardian").textContent = roles.guardian_;
+            document.getElementById("roleTreasury").textContent = roles.treasury_;
+            document.getElementById("roleFallback").textContent = roles.fallbackReceiver_;
+          } catch (err) {
+            document.getElementById("roleRelay").textContent = document.getElementById("roleGuardian").textContent = document.getElementById("roleTreasury").textContent = document.getElementById("roleFallback").textContent = '—';
+          }
+
+          try {
+            var ver = await contract.version();
+            var ns = await contract.namespaceHash();
+            document.getElementById("infoVersion").textContent = ver.toString();
+            document.getElementById("infoNamespace").textContent = ns;
+          } catch (err) {
+            document.getElementById("infoVersion").textContent = document.getElementById("infoNamespace").textContent = '—';
+          }
+        } catch (e) {
+          showMsg(e.message || 'Failed to load contract', true);
+          statBands.textContent = statSignals.textContent = statSessions.textContent = statEpoch.textContent = '—';
+          bandsBody.textContent = signalsBody.textContent = sessionsBody.textContent = '—';
+        }
+      }
+
+      document.getElementById("btnBatchResolve").addEventListener('click', async function () {
+        var raw = document.getElementById("batchBps").value.trim();
+        if (!raw) { document.getElementById("batchResolveResult").textContent = 'Enter comma-separated BPS'; return; }
+        var parts = raw.split(/[\s,]+/).map(function (x) { return parseInt(x, 10); }).filter(function (n) { return !isNaN(n) && n >= 0 && n <= 10000; });
+        if (!parts.length) { document.getElementById("batchResolveResult").textContent = 'No valid BPS'; return; }
+        var addr = contractInput.value.trim();
+        if (!addr) { document.getElementById("batchResolveResult").textContent = 'Enter contract address'; return; }
+        try {
+          var c = contract || new ethers.Contract(addr, JER0ME_ABI, provider || new ethers.BrowserProvider(window.ethereum));
+          var lines = [];
+          for (var i = 0; i < parts.length; i++) {
+            var r = await c.resolveBandForBps(parts[i]);
+            lines.push('BPS ' + parts[i] + ' → band_id ' + r[0] + ' (found: ' + r[1] + ')');
+          }
+          document.getElementById("batchResolveResult").textContent = lines.join('\n');
+        } catch (e) {
+          document.getElementById("batchResolveResult").textContent = 'Error: ' + (e.message || 'failed');
+        }
+      });
+
+      btnResolve.addEventListener('click', async function () {
+        const bps = parseInt(resolveBps.value, 10);
+        if (isNaN(bps) || bps < 0 || bps > 10000) {
+          resolveResult.textContent = 'Enter BPS 0–10000';
+          return;
+        }
+        const addr = contractInput.value.trim();
+        if (!addr) {
+          resolveResult.textContent = 'Enter contract address first';
+          return;
