@@ -308,3 +308,65 @@
     <div class="panel" id="panel-sessions">
       <div class="card">
         <h3>Terminal sessions</h3>
+        <div class="terminal-box" id="sessionsTable">
+          <div class="row head">id | analyst | opened | expiry | closed</div>
+          <div class="row" id="sessionsBody">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-feeds">
+      <div class="card">
+        <h3>Relay feeds</h3>
+        <div id="feedsList"></div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-resolve">
+      <div class="card">
+        <h3>Resolve BPS to band</h3>
+        <div class="resolve-in">
+          <input type="number" id="resolveBps" placeholder="BPS (0-10000)" min="0" max="10000" />
+          <button type="button" class="btn primary small" id="btnResolve">Resolve</button>
+        </div>
+        <div class="terminal-box" id="resolveResult">—</div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-config">
+      <div class="card">
+        <h3>Config snapshot</h3>
+        <div class="terminal-box" id="configSnapshot">—</div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-history">
+      <div class="card">
+        <h3>Band history (recent)</h3>
+        <div class="terminal-box" id="historyTable">
+          <div class="row head">entry | band_id | lower_bps | upper_bps | active | at_block</div>
+          <div class="row" id="historyBody">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-roles">
+      <div class="card">
+        <h3>Contract roles</h3>
+        <div class="info-line"><span class="k">Relay</span><span class="v truncate" id="roleRelay">—</span></div>
+        <div class="info-line"><span class="k">Guardian</span><span class="v truncate" id="roleGuardian">—</span></div>
+        <div class="info-line"><span class="k">Treasury</span><span class="v truncate" id="roleTreasury">—</span></div>
+        <div class="info-line"><span class="k">Fallback</span><span class="v truncate" id="roleFallback">—</span></div>
+      </div>
+    </div>
+
+    <section class="grid-2" style="margin-top: 1rem;">
+      <div class="card">
+        <h3>Batch resolve BPS</h3>
+        <p class="mono" style="margin-bottom: 0.5rem;">Comma-separated BPS values (e.g. 0, 50, 250, 5000)</p>
+        <div class="resolve-in">
+          <input type="text" id="batchBps" placeholder="0, 50, 250" style="flex: 1; min-width: 180px;" />
+          <button type="button" class="btn primary small" id="btnBatchResolve">Resolve</button>
+        </div>
+        <div class="terminal-box" id="batchResolveResult">—</div>
+      </div>
