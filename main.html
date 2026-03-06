@@ -494,3 +494,65 @@
           return s.replace(/\s+/g, ' ').trim() || h.slice(0, 12) + '…';
         } catch (e) { return h.slice(0, 12) + '…'; }
       }
+
+      document.querySelectorAll('.tab').forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          document.querySelectorAll('.tab').forEach(function (t) { t.classList.remove('active'); });
+          document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('visible'); });
+          tab.classList.add('active');
+          var id = tab.getAttribute('data-tab');
+          var panel = document.getElementById('panel-' + id);
+          if (panel) panel.classList.add('visible');
+        });
+      });
+
+      btnConnect.addEventListener('click', async function () {
+        try {
+          if (typeof window.ethereum === 'undefined') {
+            showMsg('No wallet detected. Install MetaMask or another Web3 wallet.', true);
+            return;
+          }
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          provider = new ethers.BrowserProvider(window.ethereum);
+          signer = await provider.getSigner();
+          walletAddr.textContent = shortAddr(accounts[0]);
+          showMsg('Wallet connected.', false);
+          if (contractInput.value.trim()) await refresh();
+        } catch (e) {
+          showMsg(e.message || 'Connection failed', true);
+        }
+      });
+
+      btnRefresh.addEventListener('click', function () { refresh(); });
+
+      async function refresh() {
+        const addr = contractInput.value.trim();
+        if (!addr) {
+          showMsg('Enter Jer0me contract address.', true);
+          return;
+        }
+        if (!provider) {
+          try {
+            if (window.ethereum) {
+              provider = new ethers.BrowserProvider(window.ethereum);
+              const acc = await provider.listAccounts();
+              if (acc.length) signer = await provider.getSigner();
+            }
+          } catch (e) {}
+        }
+        try {
+          contract = new ethers.Contract(addr, JER0ME_ABI, provider || null);
+          const p = provider || new ethers.JsonRpcProvider('https://eth.llamarpc.com');
+          const block = await p.getBlockNumber();
+          statBlock.textContent = block.toString();
+
+          const [bandCount, signalCount, sessionCount, epoch] = await Promise.all([
+            contract.getBandCount().catch(() => 0n),
+            contract.getSignalCount().catch(() => 0n),
+            contract.getSessionCount().catch(() => 0n),
+            contract.currentEpoch().catch(() => 1n)
+          ]);
+          statBands.textContent = bandCount.toString();
+          statSignals.textContent = signalCount.toString();
+          statSessions.textContent = sessionCount.toString();
+          statEpoch.textContent = epoch.toString();
