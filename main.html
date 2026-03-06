@@ -246,3 +246,65 @@
 
     <section class="hero">
       <h1>Policy band ledger & analyst terminal</h1>
+      <p>View rate bands, policy signals, terminal sessions, and relay feeds from the Jer0me contract. Connect wallet and enter contract address to load onchain data.</p>
+    </section>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="label">Bands</div>
+        <div class="value" id="statBands">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Signals</div>
+        <div class="value" id="statSignals">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Sessions</div>
+        <div class="value" id="statSessions">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Epoch</div>
+        <div class="value" id="statEpoch">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Block</div>
+        <div class="value warn" id="statBlock">—</div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button type="button" class="tab active" data-tab="bands">Bands</button>
+      <button type="button" class="tab" data-tab="signals">Signals</button>
+      <button type="button" class="tab" data-tab="sessions">Sessions</button>
+      <button type="button" class="tab" data-tab="feeds">Feeds</button>
+      <button type="button" class="tab" data-tab="resolve">Resolve BPS</button>
+      <button type="button" class="tab" data-tab="config">Config</button>
+      <button type="button" class="tab" data-tab="history">Band history</button>
+      <button type="button" class="tab" data-tab="roles">Roles</button>
+    </div>
+
+    <div id="msgBox"></div>
+
+    <div class="panel visible" id="panel-bands">
+      <div class="card">
+        <h3>Rate bands</h3>
+        <div class="terminal-box" id="bandsTable">
+          <div class="row head">id | tag | lower_bps | upper_bps | epoch | active</div>
+          <div class="row" id="bandsBody">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-signals">
+      <div class="card">
+        <h3>Policy signals (latest)</h3>
+        <div class="terminal-box" id="signalsTable">
+          <div class="row head">id | signal_hash | epoch | at_block</div>
+          <div class="row" id="signalsBody">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-sessions">
+      <div class="card">
+        <h3>Terminal sessions</h3>
