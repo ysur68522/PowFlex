@@ -370,3 +370,65 @@
         </div>
         <div class="terminal-box" id="batchResolveResult">—</div>
       </div>
+      <div class="card">
+        <h3>Contract info</h3>
+        <div class="info-line"><span class="k">Version</span><span class="v" id="infoVersion">—</span></div>
+        <div class="info-line"><span class="k">Namespace</span><span class="v truncate" id="infoNamespace">—</span></div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top: 1.5rem;">
+      <h3>About PowFlex.com</h3>
+      <p class="mono" style="font-size: 0.85rem; color: var(--text-dim); line-height: 1.6;">
+        This interface reads from the Jer0me onchain ledger: rate bands (policy bands in bps), policy signals per epoch,
+        analyst terminal sessions and votes, and relay feed slots. Connect your wallet and enter the Jer0me contract address
+        above, then click Refresh to load data. Resolve BPS maps a basis-point value to the active band that contains it.
+        Band history and config snapshot are available in the Config and Band history tabs. Roles show the immutable
+        relay, guardian, treasury, and fallback receiver addresses set at deployment.
+      </p>
+      <div class="info-line" style="margin-top: 0.75rem;"><span class="k">BPS range</span><span class="v">0 – 10000</span></div>
+      <div class="info-line"><span class="k">Vote directions</span><span class="v">0 = hold, 1 = up, 2 = down</span></div>
+      <div class="info-line"><span class="k">Session duration</span><span class="v">150 blocks</span></div>
+      <div class="info-line"><span class="k">Max feeds</span><span class="v">16</span></div>
+      <div class="info-line"><span class="k">Epoch blocks</span><span class="v">2016</span></div>
+      <div class="info-line"><span class="k">BPS denominator</span><span class="v">10000</span></div>
+      <h4 style="font-size: 0.9rem; margin-top: 1rem; margin-bottom: 0.5rem;">Quick start</h4>
+      <ol class="mono" style="font-size: 0.82rem; color: var(--text-dim); padding-left: 1.25rem; line-height: 1.8;">
+        <li>Click Connect to link your Web3 wallet (e.g. MetaMask).</li>
+        <li>Paste the deployed Jer0me contract address into the input field.</li>
+        <li>Click Refresh to fetch bands, signals, sessions, feeds, config, and history.</li>
+        <li>Use the tabs to switch between Bands, Signals, Sessions, Feeds, Resolve BPS, Config, Band history, and Roles.</li>
+        <li>In Resolve BPS, enter a value 0–10000 and click Resolve to see which band contains that BPS.</li>
+        <li>Use Batch resolve (below the tabs) to resolve multiple BPS values at once, comma-separated.</li>
+      </ol>
+      <p class="mono muted" style="margin-top: 1rem; font-size: 0.78rem;">
+        PowFlex.com does not store private keys or send transactions; it only reads from the contract. For relay, guardian, or analyst actions, use the FEDar CLI or interact with the contract directly via your wallet.
+      </p>
+      <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border-soft);">
+        <h4 style="font-size: 0.88rem; margin-bottom: 0.5rem;">Data source</h4>
+        <p class="mono muted" style="font-size: 0.78rem; line-height: 1.5;">
+          All band, signal, session, and feed data is read on demand from the connected Jer0me contract. No data is cached server-side. Block number and stats are fetched at each Refresh. Ensure the contract address is correct for your network (Ethereum mainnet, Base, etc.) and that your wallet is on the same network.
+        </p>
+        <ul class="mono muted" style="font-size: 0.78rem; margin-top: 0.5rem; padding-left: 1.25rem; line-height: 1.6;">
+          <li>Bands: policy rate bands with lower/upper bps and epoch.</li>
+          <li>Signals: policy signal hashes pushed by the relay per epoch.</li>
+          <li>Sessions: analyst terminal sessions with expiry block.</li>
+          <li>Feeds: relay-updated feed slots (value, timestamp, block).</li>
+        </ul>
+      </div>
+    </section>
+
+    <footer>PowFlex.com — Fed tracker & analyst terminal. Connect to a deployed Jer0me contract to view bands, signals, sessions, and feeds.</footer>
+  </div>
+
+  <script>
+    (function () {
+      var BPS_DENOMINATOR = 10000;
+      var MAX_FEEDS = 16;
+      var VOTE_HOLD = 0, VOTE_UP = 1, VOTE_DOWN = 2;
+      var SESSION_DURATION_BLOCKS = 150;
+      var EPOCH_BLOCKS = 2016;
+      /* Jer0me constants (reference): JER0ME_VERSION=2, MAX_BANDS_DEFAULT=64, MAX_FEE_BPS=500, MAX_STALE_BLOCKS=200,
+         BATCH_SIGNALS_MAX=32, BPS_DENOMINATOR=10000. Vote directions: 0=hold, 1=up, 2=down. */
+
+      const JER0ME_ABI = [
