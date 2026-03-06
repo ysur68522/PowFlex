@@ -432,3 +432,65 @@
          BATCH_SIGNALS_MAX=32, BPS_DENOMINATOR=10000. Vote directions: 0=hold, 1=up, 2=down. */
 
       const JER0ME_ABI = [
+        "function getBandCount() view returns (uint256)",
+        "function getBand(uint256 bandId_) view returns (bytes32 bandTag, uint256 lowerBps, uint256 upperBps, uint256 policyEpoch, uint256 registeredAtBlock, bool active)",
+        "function getSignalCount() view returns (uint256)",
+        "function getSignal(uint256 signalId_) view returns (bytes32 signalHash, uint256 epoch, address relayer, uint256 atBlock)",
+        "function getSessionCount() view returns (uint256)",
+        "function getSession(uint256 sessionId_) view returns (address analyst, uint256 openedAtBlock, uint256 expiryBlock, bool closed)",
+        "function getFeed(uint256 feedIndex_) view returns (int256 value, uint256 timestamp, uint256 updatedAtBlock)",
+        "function currentEpoch() view returns (uint256)",
+        "function resolveBandForBps(uint256 bps_) view returns (uint256 bandId, bool found)",
+        "function getConfigSnapshot() view returns (uint256 bandCap, uint256 bandCount, uint256 currentEpoch_, uint256 staleWindowBlocks_, uint256 feeBps_, bool paused_)",
+        "function getBandHistoryCount() view returns (uint256)",
+        "function getBandHistoryEntry(uint256 entryId_) view returns (uint256 bandId, uint256 lowerBps, uint256 upperBps, bool active, uint256 atBlock)",
+        "function getBandHistoryRange(uint256 from_, uint256 to_) view returns (uint256[] memory bandIds, uint256[] memory lowerBps, uint256[] memory upperBps, bool[] memory active, uint256[] memory atBlocks)",
+        "function getRoleAddresses() view returns (address relay_, address guardian_, address treasury_, address fallbackReceiver_)",
+        "function version() view returns (uint256)",
+        "function namespaceHash() view returns (bytes32)"
+      ];
+
+      let provider = null;
+      let signer = null;
+      let contract = null;
+
+      const contractInput = document.getElementById("contractAddr");
+      const walletAddr = document.getElementById("walletAddr");
+      const btnConnect = document.getElementById("btnConnect");
+      const btnRefresh = document.getElementById("btnRefresh");
+      const msgBox = document.getElementById("msgBox");
+      const statBands = document.getElementById("statBands");
+      const statSignals = document.getElementById("statSignals");
+      const statSessions = document.getElementById("statSessions");
+      const statEpoch = document.getElementById("statEpoch");
+      const statBlock = document.getElementById("statBlock");
+      const bandsBody = document.getElementById("bandsBody");
+      const signalsBody = document.getElementById("signalsBody");
+      const sessionsBody = document.getElementById("sessionsBody");
+      const feedsList = document.getElementById("feedsList");
+      const resolveBps = document.getElementById("resolveBps");
+      const btnResolve = document.getElementById("btnResolve");
+      const resolveResult = document.getElementById("resolveResult");
+
+      function showMsg(text, isError) {
+        msgBox.innerHTML = '<div class="msg ' + (isError ? 'err' : 'ok') + '">' + text + '</div>';
+        setTimeout(function () { msgBox.innerHTML = ''; }, 6000);
+      }
+
+      function shortAddr(a) {
+        if (!a || a.length < 10) return a;
+        return a.slice(0, 6) + '…' + a.slice(-4);
+      }
+
+      function hexToTag(h) {
+        if (!h || h === '0x' + '0'.repeat(64)) return '—';
+        try {
+          const hex = h.slice(2);
+          let s = '';
+          for (let i = 0; i < hex.length; i += 2) {
+            const n = parseInt(hex.substr(i, 2), 16);
+            if (n >= 32 && n < 127) s += String.fromCharCode(n); else s += '.';
+          }
+          return s.replace(/\s+/g, ' ').trim() || h.slice(0, 12) + '…';
+        } catch (e) { return h.slice(0, 12) + '…'; }
+      }
