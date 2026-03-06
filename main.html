@@ -184,3 +184,65 @@
     }
     @media print {
       .btn, .tab, .contract-in, #btnConnect, #btnRefresh, #btnResolve { display: none !important; }
+      .terminal-box { border: 1px solid #333; }
+    }
+    .loading { opacity: 0.7; pointer-events: none; }
+    .pulse { animation: pulse 1.5s ease-in-out infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+    .truncate { max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .copy-btn { margin-left: 0.5rem; padding: 0.2rem 0.4rem; font-size: 0.7rem; cursor: pointer; }
+    .role-badge { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.7rem; background: var(--border); color: var(--text-dim); }
+    .role-badge.relay { background: rgba(34, 197, 94, 0.2); color: var(--accent); }
+    .role-badge.guardian { background: rgba(234, 179, 8, 0.2); color: var(--warn); }
+    .info-line { display: flex; justify-content: space-between; padding: 0.35rem 0; font-size: 0.85rem; }
+    .info-line .k { color: var(--text-dim); }
+    .info-line .v { font-family: 'JetBrains Mono', monospace; color: var(--text); }
+    .panel.visible .card { animation: fadeIn 0.25s ease; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .badge { display: inline-block; padding: 0.15rem 0.4rem; font-size: 0.7rem; border-radius: 4px; background: var(--border); }
+    .badge.green { background: rgba(34, 197, 94, 0.2); color: var(--accent); }
+    .badge.yellow { background: rgba(234, 179, 8, 0.2); color: var(--warn); }
+    .table-wrap { overflow-x: auto; }
+    .table-wrap table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    .table-wrap th, .table-wrap td { padding: 0.4rem 0.6rem; text-align: left; border-bottom: 1px solid var(--border-soft); }
+    .table-wrap th { color: var(--accent); font-weight: 600; }
+    .table-wrap tr:hover { background: var(--border-soft); }
+    input:focus, .btn:focus { outline: none; border-color: var(--accent-dim); }
+    .muted { color: var(--text-dim); }
+    .hl { color: var(--accent); }
+    .warn { color: var(--warn); }
+    ol.mono, ul.mono { font-family: 'JetBrains Mono', monospace; }
+    .card h4 { font-weight: 600; color: var(--text); }
+    #msgBox .msg { word-break: break-word; }
+    .stat-card .value.positive { color: var(--accent); }
+    .stat-card .value.negative { color: #f87171; }
+    .feed-row .feed-val.positive { color: var(--accent); }
+    .feed-row .feed-val.negative { color: #f87171; }
+    @media (prefers-reduced-motion: reduce) {
+      .panel.visible .card { animation: none; }
+      .pulse { animation: none; }
+    }
+    .terminal-box .row:nth-child(even) { background: rgba(255,255,255,0.02); }
+    .terminal-box .row.head { background: rgba(34, 197, 94, 0.08); }
+    footer a { color: var(--accent-dim); }
+    footer a:hover { color: var(--accent); }
+    .app > section + footer { margin-top: 2rem; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div>
+        <div class="logo">PowFlex.com</div>
+        <div class="tagline">Fed tracker & analyst terminal — policy bands, signals, feeds</div>
+      </div>
+      <div class="header-right">
+        <input type="text" class="contract-in" id="contractAddr" placeholder="Jer0me contract address" />
+        <span class="wallet-addr" id="walletAddr">—</span>
+        <button type="button" class="btn primary" id="btnConnect">Connect</button>
+        <button type="button" class="btn" id="btnRefresh">Refresh</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <h1>Policy band ledger & analyst terminal</h1>
